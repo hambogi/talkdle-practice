@@ -1,8 +1,9 @@
-<!doctype html>
+<!DOCTYPE html>
+
 <html lang="ko">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1, viewport-fit=cover" name="viewport"/>
 <title>워들 연습모드</title>
 <style>
   :root {
@@ -596,8 +597,126 @@
   }
 
   @media (max-width: 820px) {
+    :root {
+      --mobile-dock-height: 238px;
+    }
+
     body {
-      padding-bottom: 262px;
+      padding: 0 0 calc(var(--mobile-dock-height) + env(safe-area-inset-bottom));
+    }
+
+    .app {
+      padding: 10px 8px calc(var(--mobile-dock-height) + 18px);
+    }
+
+    header {
+      margin-bottom: 8px;
+    }
+
+    h1 {
+      font-size: 27px;
+      line-height: 1.1;
+    }
+
+    .subtitle {
+      display: none;
+    }
+
+    .panel {
+      padding: 10px 9px;
+      border-radius: 16px;
+    }
+
+    .status {
+      margin-bottom: 8px;
+    }
+
+    .badge {
+      padding: 6px 10px;
+      font-size: 13px;
+    }
+
+    #board {
+      gap: 5px;
+      margin: 8px auto 10px;
+    }
+
+    .row {
+      grid-template-columns: repeat(5, 48px);
+      gap: 5px;
+    }
+
+    .tile {
+      width: 48px;
+      height: 48px;
+      aspect-ratio: auto;
+      border-radius: 8px;
+      font-size: 25px;
+    }
+
+    .result-panel {
+      margin: 4px 0 8px;
+      padding: 9px 10px;
+      border-radius: 11px;
+    }
+
+    .result-title {
+      margin-bottom: 6px;
+      font-size: 15px;
+    }
+
+    .history-list {
+      display: none;
+    }
+
+    .summary-grid {
+      gap: 2px;
+    }
+
+    .summary-row {
+      margin: 2px 0;
+      gap: 5px;
+      min-height: 27px;
+    }
+
+    .summary-label {
+      min-width: 67px;
+      font-size: 12px;
+    }
+
+    .position-slots {
+      gap: 3px;
+    }
+
+    .position-slot {
+      width: 27px;
+      height: 27px;
+      font-size: 15px;
+      border-radius: 5px;
+    }
+
+    .jamo-chips {
+      gap: 3px;
+    }
+
+    .info-chip {
+      min-width: 27px;
+      height: 27px;
+      padding: 0 6px;
+      font-size: 14px;
+      border-radius: 5px;
+    }
+
+    /* 본문에 있던 이만 버튼은 모바일에서 숨기고, PC에서는 유지 */
+    .opening-only {
+      display: none;
+    }
+
+    .legend,
+    details,
+    .footer-actions,
+    .stats-column {
+      margin-top: 8px;
     }
 
     .mobile-dock {
@@ -606,46 +725,60 @@
       left: 0;
       right: 0;
       bottom: 0;
-      z-index: 1000;
-      background: rgba(255, 255, 255, 0.98);
-      border-top: 1px solid #d9dee7;
-      box-shadow: 0 -8px 24px rgba(30, 41, 59, 0.12);
-      padding: 8px max(8px, env(safe-area-inset-right))
-               calc(8px + env(safe-area-inset-bottom))
-               max(8px, env(safe-area-inset-left));
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
+      z-index: 9999;
+      background: rgba(255,255,255,.98);
+      border-top: 1px solid #d7dce4;
+      box-shadow: 0 -8px 24px rgba(30,41,59,.14);
+      padding:
+        7px
+        max(8px, env(safe-area-inset-right))
+        calc(7px + env(safe-area-inset-bottom))
+        max(8px, env(safe-area-inset-left));
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+    }
+
+    .mobile-dock-inner {
+      max-width: 430px;
+      margin: 0 auto;
     }
 
     .mobile-dock .jamo-entry {
-      margin: 0 0 7px;
+      display: block;
+      margin: 0 0 6px;
     }
 
     .mobile-dock .entry-slots {
-      max-width: 310px;
+      max-width: 300px;
       gap: 5px;
-      margin-bottom: 6px;
+      margin: 0 auto 5px;
     }
 
     .mobile-dock .entry-slot {
+      height: 37px;
+      min-height: 37px;
       aspect-ratio: auto;
-      height: 42px;
-      min-height: 42px;
-      border-radius: 8px;
-      font-size: 25px;
+      border-radius: 7px;
+      font-size: 22px;
     }
 
     .mobile-dock .entry-actions {
-      max-width: 310px;
+      display: grid;
+      grid-template-columns: 1fr 1.35fr;
+      max-width: 300px;
       gap: 6px;
+      margin: 0 auto 6px;
     }
 
     .mobile-dock .entry-actions button {
-      padding: 8px 10px;
-      min-height: 38px;
+      display: block;
+      min-height: 34px;
+      padding: 6px 8px;
+      font-size: 14px;
     }
 
     .mobile-dock .keyboard-panel {
+      display: block;
       margin: 0;
       padding: 0;
       border: 0;
@@ -659,57 +792,24 @@
     }
 
     .mobile-dock .keyboard-row {
+      display: grid;
+      grid-auto-flow: column;
+      grid-auto-columns: 1fr;
       gap: 4px;
       margin-bottom: 4px;
     }
 
+    .mobile-dock .keyboard-row:last-child {
+      margin-bottom: 0;
+    }
+
     .mobile-dock .key {
-      min-height: 36px;
-      padding: 5px 2px;
+      min-width: 0;
+      min-height: 34px;
+      padding: 4px 1px;
       border-radius: 7px;
-      font-size: 16px;
-    }
-
-    .compact-mobile-summary {
-      padding: 12px;
-      margin-top: 10px;
-    }
-
-    .compact-mobile-summary h3 {
-      margin-bottom: 8px;
-      font-size: 16px;
-    }
-
-    .compact-mobile-summary .history-list {
-      display: none;
-    }
-
-    .compact-mobile-summary .summary-row {
-      margin: 5px 0;
-      gap: 8px;
-    }
-
-    .compact-mobile-summary .summary-label {
-      min-width: 74px;
-      font-size: 13px;
-    }
-
-    .compact-mobile-summary .mini-tile,
-    .compact-mobile-summary .info-chip {
-      transform: scale(0.92);
-      transform-origin: left center;
-    }
-
-    #board {
-      margin-bottom: 8px;
-    }
-
-    .opening-only {
-      margin-bottom: 8px;
-    }
-
-    .mobile-stats-toggle {
-      margin-top: 12px;
+      font-size: 15px;
+      line-height: 1;
     }
   }
 
@@ -717,140 +817,134 @@
     .mobile-dock {
       display: none !important;
     }
+
+    .opening-only {
+      display: flex;
+    }
   }
 
+  .desktop-keyboard-panel { display: block; }
+  .mobile-keyboard-panel { display: block; }
+
+  @media (max-width: 820px) {
+    .desktop-keyboard-panel { display: none !important; }
+  }
+
+  @media (min-width: 821px) {
+    .mobile-keyboard-panel { display: none !important; }
+    .desktop-keyboard-panel .key {
+      cursor: default;
+      pointer-events: none;
+    }
+  }
 </style>
 </head>
 <body>
 <main class="app">
-  <header>
-    <h1>워들 연습모드</h1>
-    <div class="subtitle">첫 수 자유 선택 · 필요하면 <strong>이만</strong> 자동입력 · 최대 4회 승부</div>
-  </header>
-
-  <section class="panel">
-  <div class="main-layout">
-    <div class="game-column">
-
-    <div class="status">
-      <span class="badge" id="roundText">새 문제</span>
-    </div>
-
-
-    <div id="board" aria-label="게임판"></div>
-
-
-    <section class="result-panel" aria-label="누적 판정">
-      <div class="result-title">이번 판 누적 정보</div>
-      <div id="historyList" class="history-list"></div>
-      <div class="summary-grid">
-        <div class="summary-row">
-          <div class="summary-label">확정된 자리</div>
-          <div id="fixedPositions" class="position-slots"></div>
-        </div>
-        <div class="summary-row">
-          <div class="summary-label">존재 확인</div>
-          <div id="presentLetters" class="jamo-chips"></div>
-        </div>
-        <div class="summary-row">
-          <div class="summary-label">정답에 없음</div>
-          <div id="absentLetters" class="jamo-chips"></div>
-        </div>
-      </div>
-    </section>
-
-    <div class="practice-options opening-only">
-      <button id="fillOpeningBtn" class="secondary opening-button" type="button">이만 자동입력</button>
-    </div>
-
-    <div class="desktop-entry controls">
-      <input id="desktopGuessInput" type="text" inputmode="text" autocomplete="off"
-             autocapitalize="off" spellcheck="false"
-             placeholder="첫 번째 단어 입력" maxlength="8" />
-      <button id="desktopSubmitBtn" type="button">입력</button>
-    </div>
-
-    
-      <div class="entry-actions">
-        <button id="deleteBtn" class="secondary" type="button">지우기</button>
-        <button id="submitBtn" type="button">제출</button>
-      </div>
-    </div>
-
-    <div id="message" class="message" aria-live="polite"></div>
-
-
-    
-
-    <div class="legend">
-      <span class="lg-correct">자리까지 일치</span>
-      <span class="lg-present">다른 자리에 존재</span>
-      <span class="lg-absent">정답에 없음</span>
-    </div>
-
-    <details>
-      <summary>5칸 판정 규칙</summary>
-      <div>
+<header>
+<h1>워들 연습모드</h1>
+<div class="subtitle">첫 수 자유 선택 · 필요하면 <strong>이만</strong> 자동입력 · 최대 4회 승부</div>
+</header>
+<section class="panel">
+<div class="main-layout">
+<div class="game-column">
+<div class="status">
+<span class="badge" id="roundText">새 문제</span>
+</div>
+<div aria-label="게임판" id="board"></div>
+<section aria-label="누적 판정" class="result-panel">
+<div class="result-title">이번 판 누적 정보</div>
+<div class="history-list" id="historyList"></div>
+<div class="summary-grid">
+<div class="summary-row">
+<div class="summary-label">확정된 자리</div>
+<div class="position-slots" id="fixedPositions"></div>
+</div>
+<div class="summary-row">
+<div class="summary-label">존재 확인</div>
+<div class="jamo-chips" id="presentLetters"></div>
+</div>
+<div class="summary-row">
+<div class="summary-label">정답에 없음</div>
+<div class="jamo-chips" id="absentLetters"></div>
+</div>
+</div>
+</section>
+<div class="practice-options opening-only">
+<button class="secondary opening-button" id="fillOpeningBtn" type="button">이만 자동입력</button>
+</div>
+<div class="desktop-entry controls">
+<input autocapitalize="off" autocomplete="off" id="desktopGuessInput" inputmode="text" maxlength="8" placeholder="첫 번째 단어 입력" spellcheck="false" type="text"/>
+<button id="desktopSubmitBtn" type="button">입력</button>
+</div>
+<div aria-live="polite" class="message" id="message"></div>
+<div class="legend">
+<span class="lg-correct">자리까지 일치</span>
+<span class="lg-present">다른 자리에 존재</span>
+<span class="lg-absent">정답에 없음</span>
+</div>
+<details>
+<summary>5칸 판정 규칙</summary>
+<div>
         초성·중성·종성을 각각 분해합니다. 쌍자음, 겹받침, 복합모음은 두 자모로 풉니다.
         예: 아빠 → ㅇㅏㅂㅂㅏ, 야외 → ㅇㅑㅇㅗㅣ, 개인 → ㄱㅏㅣㅇㅣㄴ(6칸).
         정답은 빈도와 친숙도를 기준으로 정제한 500개 단어에서 출제되며, 하단 자모판을 눌러 정확히 5칸을 입력하세요.
       </div>
-    </details>
-
-    <div class="footer-actions">
-      <button id="newBtn" class="secondary">새 문제</button>
-    </div>
-  
-
-    <div class="mobile-dock">
-      <div class="jamo-entry" aria-label="현재 입력">
-      <div id="entrySlots" class="entry-slots">
-        <div class="entry-slot"></div>
-        <div class="entry-slot"></div>
-        <div class="entry-slot"></div>
-        <div class="entry-slot"></div>
-        <div class="entry-slot"></div>
-      </div>
-      <section class="keyboard-panel" aria-label="남은 자모">
-      <div class="keyboard-title">자모 현황</div>
-      <div id="jamoKeyboard" class="jamo-keyboard"></div>
-    </section>
-    </div>
-
-    </div>
-    <aside class="stats-column">
-      <button id="mobileStatsToggle" class="mobile-stats-toggle" type="button">
-        <span>나의 누적 결과</span>
-      </button>
-<section class="stats-panel" aria-label="누적 통계">
-      <div class="stats-title">나의 누적 결과</div>
-      <div class="stats-grid">
-        <div class="stat-box"><span id="gamesStat" class="stat-number">0</span><span class="stat-label">플레이</span></div>
-        <div class="stat-box"><span id="winRateStat" class="stat-number">0%</span><span class="stat-label">승률</span></div>
-        <div class="stat-box"><span id="streakStat" class="stat-number">0</span><span class="stat-label">현재 연승</span></div>
-        <div class="stat-box"><span id="bestStreakStat" class="stat-number">0</span><span class="stat-label">최고 연승</span></div>
-      </div>
-      <div class="guess-distribution">
-        <strong>1수</strong><div class="dist-bar-wrap"><div id="dist1" class="dist-bar"></div></div><span id="dist1Num">0</span>
-      </div>
-      <div class="guess-distribution">
-        <strong>2수</strong><div class="dist-bar-wrap"><div id="dist2" class="dist-bar"></div></div><span id="dist2Num">0</span>
-      </div>
-      <div class="guess-distribution">
-        <strong>3수</strong><div class="dist-bar-wrap"><div id="dist3" class="dist-bar"></div></div><span id="dist3Num">0</span>
-      </div>
-      <div class="guess-distribution">
-        <strong>4수</strong><div class="dist-bar-wrap"><div id="dist4" class="dist-bar"></div></div><span id="dist4Num">0</span>
-      </div>
-      <div class="stats-actions">
-        <button id="resetStatsBtn" class="tiny-button" type="button">통계 초기화</button>
-      </div>
-    </section>
-    </aside>
-  </div>
+</details>
+<div class="footer-actions">
+<button class="secondary" id="newBtn">새 문제</button>
+</div>
+<section aria-label="남은 자모" class="keyboard-panel desktop-keyboard-panel" id="desktopKeyboardPanel">
+<div class="keyboard-title">자모 현황</div>
+<div class="jamo-keyboard" id="desktopJamoKeyboard"></div>
+</section><div aria-label="모바일 입력 도크" class="mobile-dock" id="mobileDock"><div class="mobile-dock-inner"><div aria-label="현재 입력" class="jamo-entry">
+<div class="entry-slots" id="entrySlots">
+<div class="entry-slot"></div>
+<div class="entry-slot"></div>
+<div class="entry-slot"></div>
+<div class="entry-slot"></div>
+<div class="entry-slot"></div>
+</div>
+<div class="entry-actions">
+<button class="secondary" id="deleteBtn" type="button">지우기</button>
+<button id="submitBtn" type="button">제출</button>
+</div>
+</div><section aria-label="남은 자모" class="keyboard-panel mobile-keyboard-panel" id="mobileKeyboardPanel">
+<div class="keyboard-title">자모 현황</div>
+<div class="jamo-keyboard" id="mobileJamoKeyboard"></div>
+</section></div></div></div>
+<aside class="stats-column">
+<button class="mobile-stats-toggle" id="mobileStatsToggle" type="button">
+<span>나의 누적 결과</span>
+</button>
+<section aria-label="누적 통계" class="stats-panel">
+<div class="stats-title">나의 누적 결과</div>
+<div class="stats-grid">
+<div class="stat-box"><span class="stat-number" id="gamesStat">0</span><span class="stat-label">플레이</span></div>
+<div class="stat-box"><span class="stat-number" id="winRateStat">0%</span><span class="stat-label">승률</span></div>
+<div class="stat-box"><span class="stat-number" id="streakStat">0</span><span class="stat-label">현재 연승</span></div>
+<div class="stat-box"><span class="stat-number" id="bestStreakStat">0</span><span class="stat-label">최고 연승</span></div>
+</div>
+<div class="guess-distribution">
+<strong>1수</strong><div class="dist-bar-wrap"><div class="dist-bar" id="dist1"></div></div><span id="dist1Num">0</span>
+</div>
+<div class="guess-distribution">
+<strong>2수</strong><div class="dist-bar-wrap"><div class="dist-bar" id="dist2"></div></div><span id="dist2Num">0</span>
+</div>
+<div class="guess-distribution">
+<strong>3수</strong><div class="dist-bar-wrap"><div class="dist-bar" id="dist3"></div></div><span id="dist3Num">0</span>
+</div>
+<div class="guess-distribution">
+<strong>4수</strong><div class="dist-bar-wrap"><div class="dist-bar" id="dist4"></div></div><span id="dist4Num">0</span>
+</div>
+<div class="stats-actions">
+<button class="tiny-button" id="resetStatsBtn" type="button">통계 초기화</button>
+</div>
+</section>
+</aside>
+</div>
 </section>
 </main>
-
 <script>
 "use strict";
 
@@ -905,7 +999,8 @@ const dist2Num = document.getElementById("dist2Num");
 const dist3Num = document.getElementById("dist3Num");
 const dist4Num = document.getElementById("dist4Num");
 const resetStatsBtn = document.getElementById("resetStatsBtn");
-const jamoKeyboard = document.getElementById("jamoKeyboard");
+const desktopJamoKeyboard = document.getElementById("desktopJamoKeyboard");
+const mobileJamoKeyboard = document.getElementById("mobileJamoKeyboard");
 const mobileStatsToggle = document.getElementById("mobileStatsToggle");
 const fillOpeningBtn = document.getElementById("fillOpeningBtn");
 const statsPanel = document.querySelector(".stats-column .stats-panel");
@@ -1018,24 +1113,38 @@ function recordGame(won, tries) {
   renderStats();
 }
 
-function createKeyboard() {
-  jamoKeyboard.innerHTML = "";
+function buildKeyboard(container, interactive) {
+  container.innerHTML = "";
   KEYBOARD_ROWS.forEach(rowLetters => {
     const row = document.createElement("div");
     row.className = "keyboard-row";
+
     rowLetters.forEach(jamo => {
       const key = document.createElement("button");
       key.type = "button";
       key.className = "key";
       key.dataset.jamo = jamo;
       key.textContent = jamo;
-      key.addEventListener("click", () => {
-        if (isMobileMode()) addJamo(jamo);
-      });
+
+      if (interactive) {
+        key.addEventListener("click", () => {
+          if (isMobileMode()) addJamo(jamo);
+        });
+      } else {
+        key.tabIndex = -1;
+        key.setAttribute("aria-hidden", "true");
+      }
+
       row.appendChild(key);
     });
-    jamoKeyboard.appendChild(row);
+
+    container.appendChild(row);
   });
+}
+
+function createKeyboard() {
+  buildKeyboard(desktopJamoKeyboard, false);
+  buildKeyboard(mobileJamoKeyboard, true);
 }
 
 function updateKeyboard() {
@@ -1051,7 +1160,7 @@ function updateKeyboard() {
     });
   });
 
-  jamoKeyboard.querySelectorAll(".key").forEach(key => {
+  document.querySelectorAll(".desktop-keyboard-panel .key, .mobile-keyboard-panel .key").forEach(key => {
     key.className = "key";
     const state = states[key.dataset.jamo];
     if (state) key.classList.add(state);
