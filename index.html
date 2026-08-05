@@ -837,6 +837,84 @@
       pointer-events: none;
     }
   }
+
+  .tile.preview {
+    background: #ffffff;
+    color: var(--accent);
+    border-color: #aeb6c2;
+  }
+
+  @media (max-width: 820px) {
+    h1 {
+      font-size: 24px;
+    }
+
+    .mobile-dock .jamo-entry {
+      display: none !important;
+    }
+
+    #board {
+      margin: 6px auto 8px;
+    }
+
+    .row {
+      grid-template-columns: repeat(5, 46px);
+      gap: 5px;
+    }
+
+    .tile {
+      width: 46px;
+      height: 46px;
+      font-size: 24px;
+    }
+
+    .result-panel {
+      margin: 4px 0 6px;
+      padding: 8px 9px;
+    }
+
+    .mobile-dock .keyboard-row {
+      display: flex;
+      justify-content: center;
+      gap: 4px;
+      margin-bottom: 4px;
+    }
+
+    .mobile-dock .key {
+      width: 32px;
+      min-width: 32px;
+      min-height: 36px;
+      height: 36px;
+      padding: 4px 1px;
+      border-radius: 7px;
+      font-size: 15px;
+      line-height: 1;
+    }
+
+    .mobile-dock .action-key {
+      width: 62px;
+      min-width: 62px;
+      font-size: 13px;
+      padding: 4px 6px;
+    }
+
+    .mobile-dock .backspace-key {
+      background: #eef2f6;
+      color: var(--accent);
+    }
+
+    .mobile-dock .submit-key {
+      background: var(--accent);
+      color: #ffffff;
+    }
+  }
+
+  @media (min-width: 821px) {
+    .action-key {
+      display: none !important;
+    }
+  }
+
 </style>
 </head>
 <body>
@@ -1115,7 +1193,8 @@ function recordGame(won, tries) {
 
 function buildKeyboard(container, interactive) {
   container.innerHTML = "";
-  KEYBOARD_ROWS.forEach(rowLetters => {
+
+  KEYBOARD_ROWS.forEach((rowLetters, rowIndex) => {
     const row = document.createElement("div");
     row.className = "keyboard-row";
 
@@ -1137,6 +1216,26 @@ function buildKeyboard(container, interactive) {
 
       row.appendChild(key);
     });
+
+    if (interactive && rowIndex === 0) {
+      const backKey = document.createElement("button");
+      backKey.type = "button";
+      backKey.className = "key action-key backspace-key";
+      backKey.dataset.action = "delete";
+      backKey.textContent = "지우기";
+      backKey.addEventListener("click", deleteJamo);
+      row.appendChild(backKey);
+    }
+
+    if (interactive && rowIndex === KEYBOARD_ROWS.length - 1) {
+      const submitKey = document.createElement("button");
+      submitKey.type = "button";
+      submitKey.className = "key action-key submit-key";
+      submitKey.dataset.action = "submit";
+      submitKey.textContent = "제출";
+      submitKey.addEventListener("click", submitGuess);
+      row.appendChild(submitKey);
+    }
 
     container.appendChild(row);
   });
@@ -1160,7 +1259,7 @@ function updateKeyboard() {
     });
   });
 
-  document.querySelectorAll(".desktop-keyboard-panel .key, .mobile-keyboard-panel .key").forEach(key => {
+  document.querySelectorAll(".desktop-keyboard-panel .key[data-jamo], .mobile-keyboard-panel .key[data-jamo]").forEach(key => {
     key.className = "key";
     const state = states[key.dataset.jamo];
     if (state) key.classList.add(state);
@@ -1299,6 +1398,18 @@ function renderEntry() {
   entrySlots.forEach((slot, index) => {
     slot.textContent = currentEntry[index] || "";
     slot.classList.toggle("filled", Boolean(currentEntry[index]));
+  });
+
+  if (!isMobileMode()) return;
+
+  const row = board.querySelector(`.row[data-row="${guesses.length}"]`);
+  if (!row) return;
+
+  const tiles = [...row.children];
+  tiles.forEach((tile, index) => {
+    const jamo = currentEntry[index] || "";
+    tile.textContent = jamo;
+    tile.className = jamo ? "tile filled preview" : "tile";
   });
 }
 
