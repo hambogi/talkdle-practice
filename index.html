@@ -4,7 +4,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1, viewport-fit=cover" name="viewport"/>
-<title>워들 연습모드 v5</title>
+<title>워들 연습모드 · 힌트·모바일 개선</title>
 <style>
   :root {
     --bg: #f7f5ef;
@@ -598,7 +598,7 @@
 
   @media (max-width: 820px) {
     :root {
-      --mobile-dock-height: 238px;
+      --mobile-dock-height: 254px;
     }
 
     body {
@@ -881,21 +881,21 @@
     }
 
     .mobile-dock .key {
-      width: 32px;
-      min-width: 32px;
-      min-height: 36px;
-      height: 36px;
-      padding: 4px 1px;
-      border-radius: 7px;
-      font-size: 15px;
+      width: 35px;
+      min-width: 35px;
+      min-height: 40px;
+      height: 40px;
+      padding: 5px 1px;
+      border-radius: 8px;
+      font-size: 16px;
       line-height: 1;
     }
 
     .mobile-dock .action-key {
-      width: 62px;
-      min-width: 62px;
-      font-size: 13px;
-      padding: 4px 6px;
+      width: 68px;
+      min-width: 68px;
+      font-size: 14px;
+      padding: 5px 7px;
     }
 
     .mobile-dock .backspace-key {
@@ -1624,6 +1624,7 @@ function startGame() {
   desktopGuessInput.value = "";
   desktopGuessInput.placeholder = "첫 번째 단어 입력";
   fillOpeningBtn.disabled = false;
+  newBtn.disabled = true;
   setMessage("");
 
   roundText.textContent = "1수 차례";
@@ -1681,6 +1682,7 @@ function finish(won) {
   desktopSubmitBtn.disabled = true;
   desktopGuessInput.disabled = true;
   fillOpeningBtn.disabled = true;
+  newBtn.disabled = false;
   roundText.textContent = won ? "성공" : "종료";
 
   if (!gameRecorded) {
@@ -1701,7 +1703,10 @@ desktopGuessInput.addEventListener("keydown", event => {
   if (event.key === "Enter") submitDesktopGuess();
 });
 deleteBtn.addEventListener("click", deleteJamo);
-newBtn.addEventListener("click", startGame);
+newBtn.addEventListener("click", () => {
+  if (!gameOver) return;
+  startGame();
+});
 
 window.addEventListener("resize", () => {
   stopDeleteRepeat();
