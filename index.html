@@ -938,6 +938,81 @@
     }
   }
 
+
+  .hint-panel {
+    margin: 4px 0 18px;
+    border: 1px solid #d9dee5;
+    border-radius: 14px;
+    background: #f8fafc;
+    overflow: hidden;
+  }
+  .hint-button {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 13px 14px;
+    border-radius: 0;
+    background: #eef2f6;
+    color: var(--accent);
+    text-align: left;
+  }
+  .hint-button[aria-expanded="true"] {
+    background: var(--accent);
+    color: #fff;
+  }
+  .hint-button:disabled {
+    cursor: not-allowed;
+    background: #eef0f3;
+    color: #9aa1aa;
+    opacity: .82;
+  }
+  .hint-count {
+    flex: 0 0 auto;
+    padding: 4px 8px;
+    border-radius: 999px;
+    background: rgba(255,255,255,.72);
+    color: var(--accent);
+    font-size: 12px;
+  }
+  .hint-content {
+    padding: 12px 14px 14px;
+  }
+  .hint-note {
+    margin-bottom: 10px;
+    color: var(--muted);
+    font-size: 13px;
+  }
+  .remaining-words {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 7px;
+    max-height: 240px;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+  .remaining-word {
+    padding: 6px 9px;
+    border: 1px solid #d7dde5;
+    border-radius: 8px;
+    background: #fff;
+    color: var(--accent);
+    font-size: 14px;
+    font-weight: 800;
+    cursor: pointer;
+    touch-action: manipulation;
+  }
+  .remaining-word:hover,
+  .remaining-word:focus-visible {
+    border-color: var(--accent);
+    background: #eef3f8;
+    outline: none;
+  }
+  .remaining-word:active {
+    transform: scale(.97);
+  }
+
 </style>
 </head>
 <body>
@@ -953,22 +1028,13 @@
 <span class="badge" id="roundText">새 문제</span>
 </div>
 <div aria-label="게임판" id="board"></div>
-<section aria-label="누적 판정" class="result-panel">
-<div class="result-title">이번 판 누적 정보</div>
-<div class="history-list" id="historyList"></div>
-<div class="summary-grid">
-<div class="summary-row">
-<div class="summary-label">확정된 자리</div>
-<div class="position-slots" id="fixedPositions"></div>
-</div>
-<div class="summary-row">
-<div class="summary-label">존재 확인</div>
-<div class="jamo-chips" id="presentLetters"></div>
-</div>
-<div class="summary-row">
-<div class="summary-label">정답에 없음</div>
-<div class="jamo-chips" id="absentLetters"></div>
-</div>
+<section aria-label="힌트" class="hint-panel">
+<button aria-controls="hintContent" aria-expanded="false" class="hint-button" disabled id="hintBtn" type="button">
+<span id="hintLabel">🔒 첫 단어 제출 후 힌트 사용</span><span class="hint-count" id="hintCount"></span>
+</button>
+<div class="hint-content" hidden id="hintContent">
+<div class="hint-note">지금까지의 판정과 모두 일치하는 정답 후보입니다.</div>
+<div class="remaining-words" id="remainingWords"></div>
 </div>
 </section>
 <div class="practice-options opening-only">
@@ -989,7 +1055,7 @@
 <div>
         초성·중성·종성을 각각 분해합니다. 쌍자음, 겹받침, 복합모음은 두 자모로 풉니다.
         예: 아빠 → ㅇㅏㅂㅂㅏ, 야외 → ㅇㅑㅇㅗㅣ, 개인 → ㄱㅏㅣㅇㅣㄴ(6칸).
-        정답은 빈도와 친숙도를 기준으로 정제한 500개 단어에서 출제되며, 하단 자모판을 눌러 정확히 5칸을 입력하세요.
+        정답은 빈도와 친숙도를 기준으로 정제한 1,045개 단어에서 출제되며, 하단 자모판을 눌러 정확히 5칸을 입력하세요.
       </div>
 </details>
 <div class="footer-actions">
@@ -1049,7 +1115,7 @@
 <script>
 "use strict";
 
-const ANSWERS = ["사람", "엄마", "아빠", "요즘", "시간", "친구", "정도", "학교", "다음", "얘기", "처음", "지금", "이번", "마음", "노래", "사진", "아침", "경우", "얼마", "기분", "부분", "가족", "조금", "오늘", "나중", "이름", "회사", "도움", "주말", "여름", "이제", "남자", "효과", "겨울", "저녁", "바람", "모양", "시장", "공부", "수업", "혼자", "아들", "이상", "가을", "자신", "시대", "김치", "최고", "그림", "가방", "하늘", "가격", "사회", "고민", "필요", "사랑", "요새", "사실", "정보", "모습", "시골", "시험", "사과", "주변", "라면", "자체", "선수", "무릎", "어른", "수영", "보험", "감기", "종류", "의사", "며칠", "과자", "재미", "토끼", "자연", "준비", "인기", "놀이", "지역", "작가", "감자", "기회", "채소", "그릇", "자식", "의미", "휴일", "바닥", "비용", "축구", "구멍", "치과", "야채", "가슴", "수박", "만두", "재료", "난리", "식구", "어제", "주식", "식초", "공기", "모임", "사장", "노력", "추석", "자세", "식사", "정리", "이해", "여성", "시절", "기름", "가게", "우산", "수학", "종이", "기본", "교회", "시작", "부담", "이불", "기업", "지방", "역사", "주인", "경기", "소금", "고장", "검사", "교육", "당시", "청소", "용기", "취미", "근처", "의자", "기능", "평소", "미술", "먼지", "숫자", "그날", "소설", "양파", "마을", "기간", "젖소", "농사", "바퀴", "수술", "수건", "구경", "공주", "소식", "주위", "사탕", "배우", "오줌", "차례", "인사", "고래", "정부", "목표", "가위", "일기", "전기", "대리", "교실", "상추", "비밀", "거울", "소화", "업무", "차량", "기술", "아래", "부정", "모래", "부장", "숙소", "거품", "구름", "수분", "대표", "단어", "제도", "비만", "온도", "기계", "표현", "기운", "구강", "표정", "아내", "갈치", "수준", "고개", "가정", "장소", "번호", "길이", "상자", "규칙", "언어", "태도", "편지", "이틀", "과거", "장기", "아까", "후배", "마늘", "분야", "주제", "먹이", "심리", "속도", "당뇨", "기준", "미래", "그중", "대사", "조합", "학기", "자석", "노인", "연기", "국수", "시설", "상처", "수면", "문어", "국가", "치매", "서점", "실수", "눈치", "야식", "연구", "멸치", "꼬리", "순서", "내기", "기대", "소개", "호박", "조건", "그네", "휴식", "고향", "애교", "수입", "기침", "상가", "수염", "세포", "사용", "위주", "장사", "기린", "지인", "음료", "구체", "치약", "에이", "마당", "오전", "위치", "대파", "버섯", "문자", "주름", "발표", "사업", "자동", "탁구", "경치", "박사", "개미", "바늘", "장마", "조절", "도전", "거실", "현지", "습기", "고속", "피해", "상어", "그것", "봉지", "교통", "영어", "타인", "동서", "공유", "암기", "노을", "금리", "박수", "신호", "보통", "필수", "사건", "시합", "사촌", "자극", "소풍", "시계", "뿌리", "배추", "육수", "주문", "지식", "지진", "이성", "주방", "향기", "접시", "독서", "국어", "부탁", "소용", "이혼", "도장", "점수", "일리", "허락", "평가", "참치", "조림", "전자", "조각", "보상", "면허", "의료", "의지", "미세", "자랑", "정치", "욕구", "병어", "변비", "엄두", "별거", "단추", "정서", "수익", "시각", "계기", "공사", "초반", "소름", "호흡", "어묵", "조명", "비법", "기록", "산소", "인구", "동시", "부엌", "육류", "잔디", "홍어", "이용", "중고", "바위", "노화", "이론", "고통", "전부", "포장", "수능", "초대", "부인", "말자", "변기", "주의", "최초", "조직", "일부", "시점", "보람", "안주", "이웃", "음주", "흐름", "홍수", "동기", "글자", "장비", "홍시", "인류", "수정", "상사", "세기", "봉투", "집사", "차선", "외부", "소득", "버릇", "비결", "새우", "시선", "야외", "제사", "시국", "시내", "미안", "세수", "연고", "지출", "장어", "이전", "향수", "가입", "우선", "저축", "서민", "벌초", "구슬", "조개", "논리", "까치", "심사", "축하", "손주", "마법", "시집", "남녀", "소문", "교정", "종교", "지점", "유명", "부품", "조심", "비율", "무게", "꼬마", "자금", "외모", "야근", "고급", "효율", "고집", "사연", "단지", "가짜", "열차", "주먹", "안타", "로션", "줄기", "조상", "목사", "실비", "조언", "한시", "위기", "기념", "모둠", "손자", "물가", "근무", "공포", "거래", "나물", "분수", "최저", "유전", "낭비", "요금", "유학", "무늬", "부위", "시술", "지속", "동료", "분리", "구역", "신고", "조회", "가죽", "보장", "오염", "내부", "조화", "합리", "멀리", "감소", "질서"];
+const ANSWERS = ["사람", "엄마", "아빠", "요즘", "시간", "친구", "정도", "학교", "다음", "얘기", "처음", "지금", "이번", "마음", "노래", "사진", "아침", "경우", "얼마", "기분", "부분", "가족", "조금", "오늘", "나중", "이름", "회사", "도움", "주말", "여름", "이제", "남자", "효과", "겨울", "저녁", "바람", "모양", "시장", "공부", "수업", "혼자", "아들", "이상", "가을", "자신", "시대", "김치", "최고", "그림", "가방", "하늘", "가격", "사회", "고민", "필요", "사랑", "요새", "사실", "정보", "모습", "시골", "시험", "사과", "주변", "라면", "자체", "선수", "무릎", "어른", "수영", "보험", "감기", "종류", "의사", "며칠", "과자", "재미", "토끼", "자연", "준비", "인기", "놀이", "지역", "작가", "감자", "기회", "채소", "그릇", "자식", "의미", "휴일", "바닥", "비용", "축구", "구멍", "치과", "야채", "가슴", "수박", "만두", "재료", "난리", "식구", "어제", "주식", "식초", "공기", "모임", "사장", "노력", "추석", "자세", "식사", "정리", "이해", "여성", "시절", "기름", "가게", "우산", "수학", "종이", "기본", "교회", "시작", "부담", "이불", "기업", "지방", "역사", "주인", "경기", "소금", "고장", "검사", "교육", "당시", "청소", "용기", "취미", "근처", "의자", "기능", "평소", "미술", "먼지", "숫자", "그날", "소설", "양파", "마을", "기간", "젖소", "농사", "바퀴", "수술", "수건", "구경", "공주", "소식", "주위", "사탕", "배우", "오줌", "차례", "인사", "고래", "정부", "목표", "가위", "일기", "전기", "대리", "교실", "상추", "비밀", "거울", "소화", "업무", "차량", "기술", "아래", "부정", "모래", "부장", "숙소", "거품", "구름", "수분", "대표", "단어", "제도", "비만", "온도", "기계", "표현", "기운", "구강", "표정", "아내", "갈치", "수준", "고개", "가정", "장소", "번호", "길이", "상자", "규칙", "언어", "태도", "편지", "이틀", "과거", "장기", "아까", "후배", "마늘", "분야", "주제", "먹이", "심리", "속도", "당뇨", "기준", "미래", "그중", "대사", "조합", "학기", "자석", "노인", "연기", "국수", "시설", "상처", "수면", "문어", "국가", "치매", "서점", "실수", "눈치", "야식", "연구", "멸치", "꼬리", "순서", "내기", "기대", "소개", "호박", "조건", "그네", "휴식", "고향", "애교", "수입", "기침", "상가", "수염", "세포", "사용", "위주", "장사", "기린", "지인", "음료", "구체", "치약", "에이", "마당", "오전", "위치", "대파", "버섯", "문자", "주름", "발표", "사업", "자동", "탁구", "경치", "박사", "개미", "바늘", "장마", "조절", "도전", "거실", "현지", "습기", "고속", "피해", "상어", "그것", "봉지", "교통", "영어", "타인", "동서", "공유", "암기", "노을", "금리", "박수", "신호", "보통", "필수", "사건", "시합", "사촌", "자극", "소풍", "시계", "뿌리", "배추", "육수", "주문", "지식", "지진", "이성", "주방", "향기", "접시", "독서", "국어", "부탁", "소용", "이혼", "도장", "점수", "일리", "허락", "평가", "참치", "조림", "전자", "조각", "보상", "면허", "의료", "의지", "미세", "자랑", "정치", "욕구", "병어", "변비", "엄두", "별거", "단추", "정서", "수익", "시각", "계기", "공사", "초반", "소름", "호흡", "어묵", "조명", "비법", "기록", "산소", "인구", "동시", "부엌", "육류", "잔디", "홍어", "이용", "중고", "바위", "노화", "이론", "고통", "전부", "포장", "수능", "초대", "부인", "말자", "변기", "주의", "최초", "조직", "일부", "시점", "보람", "안주", "이웃", "음주", "흐름", "홍수", "동기", "글자", "장비", "홍시", "인류", "수정", "상사", "세기", "봉투", "집사", "차선", "외부", "소득", "버릇", "비결", "새우", "시선", "야외", "제사", "시국", "시내", "미안", "세수", "연고", "지출", "장어", "이전", "향수", "가입", "우선", "저축", "서민", "벌초", "구슬", "조개", "논리", "까치", "심사", "축하", "손주", "마법", "시집", "남녀", "소문", "교정", "종교", "지점", "유명", "부품", "조심", "비율", "무게", "꼬마", "자금", "외모", "야근", "고급", "효율", "고집", "사연", "단지", "가짜", "열차", "주먹", "안타", "로션", "줄기", "조상", "목사", "실비", "조언", "한시", "위기", "기념", "모둠", "손자", "물가", "근무", "공포", "거래", "나물", "분수", "최저", "유전", "낭비", "요금", "유학", "무늬", "부위", "시술", "지속", "동료", "분리", "구역", "신고", "조회", "가죽", "보장", "오염", "내부", "조화", "합리", "멀리", "감소", "질서", "지압", "합주", "저금", "수당", "이력", "직무", "처방", "진료", "간호", "창고", "재고", "정가", "쿠폰", "교재", "교과", "토론", "교양", "지붕", "서랍", "샴푸", "초밥", "미역", "낙지", "굴비", "갈비", "연료", "폭우", "이슬", "한파", "기온", "습도", "기압", "농구", "배구", "골프", "러닝", "승리", "전시", "독자", "이별", "거절", "분노", "후회", "질투", "고독", "복지", "노동", "소방", "선거", "의무", "어촌", "장미", "수첩", "종료", "증가", "납부", "미납", "보증", "담보", "오한", "두통", "치통", "시력", "교복", "교문", "교장", "교감", "학부", "진로", "교탁", "등교", "오답", "벽지", "전구", "샤워", "욕조", "수납", "커튼", "우동", "파전", "항구", "어선", "노선", "경로", "도착", "터널", "가뭄", "만조", "간조", "자갈", "사막", "해고", "상여", "연차", "접수", "반려", "취소", "청구", "어장", "하천", "평야", "사슴", "염소", "조끼", "반지", "국자", "건조", "구급", "소독", "약사", "비염", "지각", "조퇴", "필기", "무대", "작사", "독주", "연주", "악기", "드럼", "패스", "우승", "우박", "잡지", "수필", "시인", "자매", "사위", "장모", "손녀", "장교", "병사", "판사", "구속", "증거", "문서", "파일", "복사", "저작", "전류", "장치", "회로", "가난", "강도", "강사", "개요", "거짓", "검토", "경비", "고용", "교대", "규정", "기억", "기적", "마감", "모금", "모범", "미남", "보급", "비판", "사망", "소망", "수단", "수명", "아동", "우편", "육아", "이득", "이익", "입구", "자격", "지능", "출구", "흥미", "안부", "야망", "여론", "오락", "우정", "유산", "이민", "철도", "초점", "저장", "착수", "가면", "가전", "가축", "거인", "경고", "고막", "고분", "고열", "고전", "구입", "구직", "규격", "금지", "급여", "기둥", "기혼", "노숙", "대여", "도둑", "도입", "마개", "마중", "말투", "모욕", "무덤", "무역", "무인", "미국", "미덕", "보석", "보안", "보육", "보온", "부상", "부채", "부업", "분유", "비상", "사냥", "사립", "사물", "사전", "사죄", "서명", "석유", "소년", "소매", "수락", "스님", "시민", "시범", "시청", "어둠", "연휴", "외교", "유물", "유적", "유죄", "의류", "이직", "자막", "자취", "저울", "조국", "조립", "조약", "조업", "조연", "주민", "지갑", "지연", "지옥", "지휘", "차단", "초청", "추억", "치킨", "투입", "파업", "파혼", "파산", "포옹", "하숙", "하품", "허용", "형사", "호감", "호칭", "회비", "휴업", "휴전", "흉터", "가동", "가문", "가발", "가상", "가설", "각도", "고난", "고물", "고정", "고함", "공지", "구간", "구독", "구분", "구석", "구성", "근로", "기말", "기상", "기습", "나락", "낙서", "노년", "노출", "다짐", "도덕", "동지", "마찰", "문구", "배치", "변호", "보복", "부동", "비극", "비중", "사명", "사정", "서술", "소감", "소속", "수위", "수집", "승부", "유급", "자본", "조종", "주량", "주목", "지름", "지명", "차별", "처벌", "파손", "표준", "화가", "후반", "가담", "가득", "가속", "간부", "거동", "거름", "거만", "가운", "강수", "거점", "경사", "경주", "고갈", "고발", "공고", "군사", "금고", "대가", "대우", "동요", "마취", "방어", "배부", "보답", "복구", "부각", "부검", "부당", "풀이", "도형", "함수", "좌표", "축소", "수직", "높이", "사각", "오각", "입시", "수강", "점프", "체조", "인도", "정비", "세차", "후진", "이동", "정차", "구매", "자산", "체포", "민사", "가해", "홍보", "스승", "제자", "감사", "배려", "양치", "폭포", "농부", "연어", "메뉴", "학비", "학자", "답지", "수칙", "수석", "수험", "수질", "수법", "수출", "수심", "수육", "교훈", "개표", "증오", "직후", "깊이", "반주", "분기", "분포", "노점", "노예", "채무", "예고", "예보", "숙모", "숙부", "숙녀", "숙주", "진보", "낙타", "낙하", "입소", "전파", "전차", "대기", "대조", "상표", "면도", "출처", "출마", "결투", "하인", "하락", "하향", "하체", "하필", "하급", "통로", "통보", "통치", "급류", "급소", "식기", "식수", "언니", "오빠", "한자", "콜라", "다섯", "요일", "아홉", "여섯", "특히", "불교", "별로", "서양", "무용", "몹시", "부족", "아픔", "그늘", "복도", "임시", "리듬", "요청", "비닐", "더위", "형부", "추위", "잔치", "악수", "영하", "중요", "미인", "장가", "차남", "가식", "가훈", "감시", "경보", "고문", "고철", "교단", "구청", "구형", "국보", "귀가", "근거", "기강", "기력", "기만", "나눔", "나름", "노랑", "노련", "도난", "도달", "도박", "두뇌", "두발", "모순", "모음", "모험", "모형", "무한", "미련", "미혼", "비난", "소음", "수련", "수평", "야간", "참여", "지문", "지병", "지침", "지형", "조난", "조작", "조짐", "신규", "세로", "사례", "로봇", "폴더", "단서", "검거", "근시", "낙오", "남부", "농지", "단가", "당구", "민요", "복무", "성우", "신부", "실무", "용도", "음모"];
 const OPENING_WORD = "이만";
 
 const CHO = [..."ㄱㄲㄴㄷㄸㄹㅁㅂㅃㅅㅆㅇㅈㅉㅊㅋㅌㅍㅎ"];
@@ -1083,10 +1149,12 @@ const entrySlots = [...document.querySelectorAll(".entry-slot")];
 const newBtn = document.getElementById("newBtn");
 const message = document.getElementById("message");
 const roundText = document.getElementById("roundText");
-const historyList = document.getElementById("historyList");
-const fixedPositions = document.getElementById("fixedPositions");
-const presentLetters = document.getElementById("presentLetters");
-const absentLetters = document.getElementById("absentLetters");
+const hintBtn = document.getElementById("hintBtn");
+const hintContent = document.getElementById("hintContent");
+const hintCount = document.getElementById("hintCount");
+const hintLabel = document.getElementById("hintLabel");
+const remainingWords = document.getElementById("remainingWords");
+const HINT_WORD_LIMIT = 20;
 const gamesStat = document.getElementById("gamesStat");
 const winRateStat = document.getElementById("winRateStat");
 const streakStat = document.getElementById("streakStat");
@@ -1361,75 +1429,78 @@ function updateKeyboard() {
   });
 }
 
-function renderCumulativeInfo() {
-  historyList.innerHTML = "";
+function patternsMatch(a, b) {
+  return a.length === b.length && a.every((value, index) => value === b[index]);
+}
 
-  const fixed = Array(5).fill("");
-  const knownPresent = new Set();
-  const knownAbsent = new Set();
+function getRemainingWords() {
+  return ANSWERS.filter(candidate => {
+    const candidateJamo = decomposeWord(candidate);
+    if (!candidateJamo || candidateJamo.length !== 5) return false;
+    return guesses.every(guess =>
+      patternsMatch(scoreGuess(guess.jamo, candidateJamo), guess.pattern)
+    );
+  });
+}
 
-  for (const guess of guesses) {
-    const item = document.createElement("div");
-    item.className = "history-item";
+function fillCandidateWord(word) {
+  if (gameOver) return;
 
-    const wordLabel = document.createElement("div");
-    wordLabel.className = "history-word";
-    wordLabel.textContent = `${guesses.indexOf(guess) + 1}수 ${guess.word}`;
-
-    const mini = document.createElement("div");
-    mini.className = "mini-result";
-
-    guess.jamo.forEach((jamo, i) => {
-      const cell = document.createElement("div");
-      cell.className = `mini-cell ${guess.pattern[i]}`;
-      cell.textContent = jamo;
-      mini.appendChild(cell);
-
-      if (guess.pattern[i] === "correct") {
-        fixed[i] = jamo;
-        knownPresent.add(jamo);
-        knownAbsent.delete(jamo);
-      } else if (guess.pattern[i] === "present") {
-        knownPresent.add(jamo);
-        knownAbsent.delete(jamo);
-      } else if (!knownPresent.has(jamo)) {
-        knownAbsent.add(jamo);
-      }
-    });
-
-    item.appendChild(wordLabel);
-    item.appendChild(mini);
-    historyList.appendChild(item);
+  if (isMobileMode()) {
+    const jamos = decomposeWord(word);
+    if (!jamos || jamos.length !== 5) return;
+    currentEntry = [...jamos];
+    renderEntry();
+  } else {
+    desktopGuessInput.value = word;
+    desktopGuessInput.focus();
+    desktopGuessInput.setSelectionRange(word.length, word.length);
   }
 
-  fixedPositions.innerHTML = "";
-  fixed.forEach(jamo => {
-    const slot = document.createElement("div");
-    slot.className = "position-slot";
-    slot.textContent = jamo || "·";
-    fixedPositions.appendChild(slot);
-  });
+  setMessage(`“${word}”을 입력칸에 넣었습니다.`);
+}
 
-  presentLetters.innerHTML = "";
-  [...knownPresent].sort().forEach(jamo => {
-    const chip = document.createElement("span");
-    chip.className = "chip present-chip";
-    chip.textContent = jamo;
-    presentLetters.appendChild(chip);
-  });
-  if (knownPresent.size === 0) {
-    presentLetters.textContent = "아직 없음";
+function renderHint() {
+  const candidates = getRemainingWords();
+  hintCount.textContent = `${candidates.length}개`;
+  remainingWords.innerHTML = "";
+
+  const note = hintContent.querySelector(".hint-note");
+
+  if (candidates.length === 0) {
+    note.textContent = "현재 판정과 일치하는 후보가 없습니다.";
+    return;
   }
 
-  absentLetters.innerHTML = "";
-  [...knownAbsent].sort().forEach(jamo => {
-    const chip = document.createElement("span");
-    chip.className = "chip absent-chip";
-    chip.textContent = jamo;
-    absentLetters.appendChild(chip);
+  if (candidates.length > HINT_WORD_LIMIT) {
+    note.textContent = `남은 후보는 ${candidates.length}개입니다. ${HINT_WORD_LIMIT}개 이하가 되면 단어 목록이 공개됩니다.`;
+    return;
+  }
+
+  note.textContent = `남은 후보 ${candidates.length}개입니다. 단어를 누르면 입력칸에 자동으로 채워집니다.`;
+  const fragment = document.createDocumentFragment();
+  candidates.forEach(word => {
+    const chip = document.createElement("button");
+    chip.type = "button";
+    chip.className = "remaining-word";
+    chip.textContent = word;
+    chip.addEventListener("click", () => fillCandidateWord(word));
+    fragment.appendChild(chip);
   });
-  if (knownAbsent.size === 0) {
-    absentLetters.textContent = "아직 없음";
+  remainingWords.appendChild(fragment);
+}
+
+function updateHint() {
+  const unlocked = guesses.length > 0;
+  hintBtn.disabled = !unlocked;
+  hintLabel.textContent = unlocked ? "💡 남은 단어 보기" : "🔒 첫 단어 제출 후 힌트 사용";
+
+  if (unlocked) {
+    const candidates = getRemainingWords();
+    hintCount.textContent = `${candidates.length}개`;
+    if (!hintContent.hidden) renderHint();
+  } else {
+    hintCount.textContent = "";
   }
 
   updateKeyboard();
@@ -1539,10 +1610,13 @@ function startGame() {
 
   createBoard();
   renderEntry();
-  historyList.innerHTML = "";
-  fixedPositions.innerHTML = "";
-  presentLetters.innerHTML = "";
-  absentLetters.innerHTML = "";
+  hintContent.hidden = true;
+  hintBtn.setAttribute("aria-expanded", "false");
+  hintBtn.disabled = true;
+  hintLabel.textContent = "🔒 첫 단어 제출 후 힌트 사용";
+  hintCount.textContent = "";
+  hintContent.querySelector(".hint-note").textContent = "지금까지의 판정과 모두 일치하는 정답 후보입니다.";
+  remainingWords.innerHTML = "";
   submitBtn.disabled = false;
   deleteBtn.disabled = false;
   desktopSubmitBtn.disabled = false;
@@ -1562,7 +1636,7 @@ function processGuess(word, jamos) {
 
   guesses.push({ word, jamo: jamos, pattern });
   paintRow(rowIndex, jamos, pattern);
-  renderCumulativeInfo();
+  updateHint();
 
   currentEntry = [];
   renderEntry();
@@ -1653,6 +1727,14 @@ fillOpeningBtn.addEventListener("click", () => {
     desktopGuessInput.value = OPENING_WORD;
     desktopGuessInput.focus();
   }
+});
+
+hintBtn.addEventListener("click", () => {
+  if (hintBtn.disabled) return;
+  const willOpen = hintContent.hidden;
+  hintContent.hidden = !willOpen;
+  hintBtn.setAttribute("aria-expanded", String(willOpen));
+  if (willOpen) renderHint();
 });
 
 resetStatsBtn.addEventListener("click", () => {
